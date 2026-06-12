@@ -1,0 +1,199 @@
+{
+    "name": "cmdp-cdf-join",
+    "dev_shared_cluster": {
+        "node_type": "m6gd.large",
+        "min_workers": 1,
+        "max_workers": 1,
+        "on_demand_nodes": 2
+    },
+    "job_tags": {
+        "some-tag": "change-data-feed-join"
+    },
+    "dev_cron_schedules": [
+        "0 13 15 30 JAN ? 2026/100"
+    ],
+    "dev_pause_schedule": false,
+    "timeout_seconds": 14400,
+    "manage_access": ["ronnie.renaldi1@accesscfa.com"],
+    "run_access": ["ronnie.renaldi1@accesscfa.com"],
+    "tasks":
+    [
+        {
+            "task_key": "Start_Full_Join_for_Incremental_Joins_1",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "script": "../jobs/cdf_join/cdf_start.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "1",
+                "test_offset": "-1",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "2",
+                "join_table": "2",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Update_1_2",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "Start_Full_Join_for_Incremental_Joins_1"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_update.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "1",
+                "test_offset": "-1",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "2",
+                "join_table": "2",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Join_1_2",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "CDF_Incremental_Update_1_2"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_join.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "1",
+                "test_offset": "-1",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "2",
+                "join_table": "2",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Update_2_2",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "CDF_Incremental_Join_1_2"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_update.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "2",
+                "test_offset": "-1",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "2",
+                "join_table": "1",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Join_2_2",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "CDF_Incremental_Update_2_2"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_join.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "2",
+                "test_offset": "-1",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "2",
+                "join_table": "1",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Update_1_3",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "CDF_Incremental_Join_2_2"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_update.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "1",
+                "test_offset": "0",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "3",
+                "join_table": "2",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Join_1_3",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "CDF_Incremental_Update_1_3"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_join.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "1",
+                "test_offset": "0",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "3",
+                "join_table": "2",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Update_2_3",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "CDF_Incremental_Join_1_3"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_update.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "2",
+                "test_offset": "0",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "3",
+                "join_table": "1",
+                "starting_version": "2"
+            }
+        },
+        {
+            "task_key": "CDF_Incremental_Join_2_3",
+            "use_shared_cluster": true,
+            "type": "notebook",
+            "depends_on_keys": [
+                "CDF_Incremental_Update_2_3"
+            ],
+            "script": "../jobs/cdf_join/cdf_incremental_join.py",
+            "dev_notebook_parameters": {
+                "test_ratio": "10000",
+                "inc_table": "2",
+                "test_offset": "0",
+                "join_col": "id",
+                "db_name": "cdf_test",
+                "test_size": "10000000",
+                "batch": "3",
+                "join_table": "1",
+                "starting_version": "2"
+            }
+        }
+    ]
+}

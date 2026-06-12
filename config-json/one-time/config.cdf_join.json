@@ -14,8 +14,8 @@
     ],
     "dev_pause_schedule": false,
     "timeout_seconds": 14400,
-    "manage_access": ["ronnie.renaldi1@accesscfa.com"],
-    "run_access": ["ronnie.renaldi1@accesscfa.com"],
+    "manage_access": ["ronnie.renaldi@gmail.com"],
+    "run_access": ["ronnie.renaldi@gmail.com"],
     "tasks":
     [
         {
